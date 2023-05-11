@@ -17,9 +17,11 @@ const getUserInput = (question) => {
     });
 };
 
+let currencyChosen;
+
 const askForCurrency = async() => {
     while(true) {
-    let currencyChosen = await getUserInput("Please input what crypto currency do you want to check? (XBT, ETH, LTC, XRP). Hit 'e' to exit. ");
+    currencyChosen = await getUserInput("Please input what crypto currency do you want to check? (XBT, ETH, LTC, XRP). Hit 'e' to exit. ");
     currencyChosen = currencyChosen.toUpperCase(); // convert input to uppercase 
 
     if (currencyChosen === "E") {
@@ -83,17 +85,18 @@ async function main() {
     );
     
 
-    console.log(('BTCMYR price on Luno: ').padEnd(maxLength) + `${lunoPriceStr}`);
+    console.log((`${currencyChosen}MYR price on Luno: `).padEnd(maxLength) + `${lunoPriceStr}`);
     console.log(('USDMYR: ').padEnd(maxLength) + `${usdMYR}`);
-    console.log(('BTCUSD price on Luno: ').padEnd(maxLength) + `USD ${lunoUSDStr}`);
-    console.log(('BTCUSD price on Binance: ').padEnd(maxLength) + `USD ${binancePriceStr}`);
+    console.log((`${currencyChosen}USD price on Luno: `).padEnd(maxLength) + `USD ${lunoUSDStr}`);
+    console.log((`${currencyChosen}USD price on Binance: `).padEnd(maxLength) + `USD ${binancePriceStr}`);
     console.log(('Price difference: ').padEnd(maxLength) + `USD ${priceDifference}`);
     console.log(('Luno premium: ').padEnd(maxLength) + `${premium}%`);
 
     process.exit();
 }
 
-
 main();
+
+export { currencyChosen };
 
 
