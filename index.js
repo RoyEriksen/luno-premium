@@ -18,22 +18,28 @@ const getUserInput = (question) => {
 };
 
 const askForCurrency = async() => {
-    let currencySelected = await getUserInput("Please input what crypto currency do you want to check? (XBT, ETH, LTC, XRP)");
-    currencySelected = currencySelected.toUpperCase(); // convert input to uppercase 
-    console.log(`You selected ${currencySelected}`)
+    while(true) {
+    let currencyChosen = await getUserInput("Please input what crypto currency do you want to check? (XBT, ETH, LTC, XRP). Hit 'e' to exit. ");
+    currencyChosen = currencyChosen.toUpperCase(); // convert input to uppercase 
 
-    const validCurrencies = ['XBT', 'ETH', 'LTC', 'XRP'];
-
-    while (!validCurrencies.includes(currencySelected)) {
-        currencySelected = prompt ('Invaid input. Please enter one of XBT, ETH, LTC, XRP');
-        currencySelected = currencySelected.toUpperCase();
+    if (currencyChosen === "E") {
+        console.log("Goodbye")
+            process.exit();
+            }    
+    else if (!['XBT', 'ETH', 'LTC', 'XRP'].includes(currencyChosen)) {
+        console.log('Invaid input. Please enter one of XBT, ETH, LTC, XRP, or "e" to exit. ');
+        }
+    
+    else {
+        return currencyChosen;
+        }
     }
 }
 
 
 async function main() {
     const currencySelected = await askForCurrency();
-    const lunoPrice = await fetchLunoPrice('https://api.luno.com/api/1/ticker?pair=${currencySelected}MYR');
+    const lunoPrice = await fetchLunoPrice(`https://api.luno.com/api/1/ticker?pair=${currencySelected}MYR`);
     const lunoPriceNum = parseFloat(lunoPrice)
     const lunoPriceStr = `MYR ${lunoPriceNum.toFixed(2)}`;
     const usdMYR = (await convertCurrency()).toFixed(6);
@@ -43,7 +49,10 @@ async function main() {
         maximumFractionDigits: 2,
     });
     const binancePrice = await getBinanceBTCPriceInUSD();
-    const binancePriceStr = binancePrice.toFixed(2);
+    const binancePriceStr = binancePrice.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
 
     const priceDifference = (lunoUSD - binancePrice).toFixed(2);
     const premium = ((lunoUSD / binancePrice - 1) * 100).toFixed(2);
@@ -73,7 +82,9 @@ async function main() {
     console.log((`Price difference: USD ${priceDifference}`).padStart(maxLength));
     console.log((`Luno premium: ${premium}%`).padStart(maxLength));
 
+    process.exit();
 }
+
 
 main();
 
