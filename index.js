@@ -36,18 +36,26 @@ const askForCurrency = async() => {
     }
 }
 
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const MAX_REQUESTS_PER_SECOND = 15;
+const delayTime = 1000 / MAX_REQUESTS_PER_SECOND;
 
 async function main() {
     const currencySelected = await askForCurrency();
+    const delayTime = 1000 / MAX_REQUESTS_PER_SECOND;
     const lunoPrice = await fetchLunoPrice(`https://api.luno.com/api/1/ticker?pair=${currencySelected}MYR`);
+    await delay(delayTime);
     const lunoPriceNum = parseFloat(lunoPrice)
     const lunoPriceStr = `MYR ${lunoPriceNum.toFixed(2)}`;
     const usdMYR = (await convertCurrency()).toFixed(6);
+    await delay(delayTime);
     const lunoUSD = lunoPrice / await convertCurrency();
     const lunoUSDStr = lunoUSD.toLocaleString(undefined, {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
     });
+    await delay(delayTime)
     const binancePrice = await getBinanceBTCPriceInUSD();
     const binancePriceStr = binancePrice.toLocaleString(undefined, {
         minimumFractionDigits: 2,
@@ -75,12 +83,12 @@ async function main() {
     );
     
 
-    console.log((`BTCMYR price on Luno: ${lunoPriceStr}`).padStart(maxLength));
-    console.log((`USDMYR: ${usdMYR}`).padStart(maxLength));
-    console.log((`BTCUSD price on Luno: USD ${lunoUSDStr}`).padStart(maxLength));
-    console.log((`BTCUSD price on Binance: USD ${binancePriceStr}`).padStart(maxLength));
-    console.log((`Price difference: USD ${priceDifference}`).padStart(maxLength));
-    console.log((`Luno premium: ${premium}%`).padStart(maxLength));
+    console.log(('BTCMYR price on Luno: ').padEnd(maxLength) + `${lunoPriceStr}`);
+    console.log(('USDMYR: ').padEnd(maxLength) + `${usdMYR}`);
+    console.log(('BTCUSD price on Luno: ').padEnd(maxLength) + `USD ${lunoUSDStr}`);
+    console.log(('BTCUSD price on Binance: ').padEnd(maxLength) + `USD ${binancePriceStr}`);
+    console.log(('Price difference: ').padEnd(maxLength) + `USD ${priceDifference}`);
+    console.log(('Luno premium: ').padEnd(maxLength) + `${premium}%`);
 
     process.exit();
 }
