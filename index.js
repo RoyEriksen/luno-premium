@@ -49,19 +49,28 @@ async function main() {
     const lunoPrice = await fetchLunoPrice(`https://api.luno.com/api/1/ticker?pair=${currencySelected}MYR`);
     await delay(delayTime);
     const lunoPriceNum = parseFloat(lunoPrice)
-    const lunoPriceStr = `MYR ${lunoPriceNum.toFixed(2)}`;
+    const lunoPriceStr = lunoPriceNum.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+        useGrouping: true,
+    })
     const usdMYR = (await convertCurrency()).toFixed(6);
     await delay(delayTime);
     const lunoUSD = lunoPrice / await convertCurrency();
     const lunoUSDStr = lunoUSD.toLocaleString(undefined, {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
+        useGrouping: true,
     });
     await delay(delayTime)
-    const binancePrice = await getBinanceBTCPriceInUSD();
-    const binancePriceStr = binancePrice.toLocaleString(undefined, {
+    const binancePrice = await getBinanceBTCPriceInUSD(currencyChosen);
+    console.log("binance Price before adjusting decimals: " + binancePrice);
+    console.log(typeof binancePrice);
+    const binancePriceNum = parseFloat(binancePrice);
+    const binancePriceStr = binancePriceNum.toLocaleString(undefined, {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
+        useGrouping: true,
     });
 
     const priceDifference = (lunoUSD - binancePrice).toFixed(2);
@@ -85,7 +94,7 @@ async function main() {
     );
     
 
-    console.log((`${currencyChosen}MYR price on Luno: `).padEnd(maxLength) + `${lunoPriceStr}`);
+    console.log((`${currencyChosen}MYR price on Luno: `).padEnd(maxLength) + `MYR ${lunoPriceStr}`);
     console.log(('USDMYR: ').padEnd(maxLength) + `${usdMYR}`);
     console.log((`${currencyChosen}USD price on Luno: `).padEnd(maxLength) + `USD ${lunoUSDStr}`);
     console.log((`${currencyChosen}USD price on Binance: `).padEnd(maxLength) + `USD ${binancePriceStr}`);
@@ -97,6 +106,5 @@ async function main() {
 
 main();
 
-export { currencyChosen };
 
 
