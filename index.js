@@ -31,21 +31,19 @@ const askForCurrency = async() => {
     else if (!['XBT', 'ETH', 'LTC', 'XRP'].includes(currencyChosen)) {
         console.log('Invaid input. Please enter one of XBT, ETH, LTC, XRP, or "e" to exit. ');
         }
-    
     else {
         return currencyChosen;
         }
     }
 }
 
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-const MAX_REQUESTS_PER_SECOND = 15;
-const delayTime = 1000 / MAX_REQUESTS_PER_SECOND;
-
 async function main() {
-    const currencySelected = await askForCurrency();
+    // delay to not make more than 15 requests per second to the crypot exchange
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const MAX_REQUESTS_PER_SECOND = 15;
     const delayTime = 1000 / MAX_REQUESTS_PER_SECOND;
+    const currencySelected = await askForCurrency();
+
     const lunoPrice = await fetchLunoPrice(`https://api.luno.com/api/1/ticker?pair=${currencySelected}MYR`);
     await delay(delayTime);
     const lunoPriceNum = parseFloat(lunoPrice)
@@ -62,10 +60,8 @@ async function main() {
         maximumFractionDigits: 2,
         useGrouping: true,
     });
-    await delay(delayTime)
     const binancePrice = await getBinanceBTCPriceInUSD(currencyChosen);
-    console.log("binance Price before adjusting decimals: " + binancePrice);
-    console.log(typeof binancePrice);
+    await delay(delayTime)
     const binancePriceNum = parseFloat(binancePrice);
     const binancePriceStr = binancePriceNum.toLocaleString(undefined, {
         minimumFractionDigits: 2,
